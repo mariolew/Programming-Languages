@@ -110,11 +110,11 @@ fun check_pat p =
             Variable x => [x]
           | TupleP ps => foldl (fn (a, b) => b @ (get_pattern_str a)) [] ps
           | ConstructorP(_, pp) => get_pattern_str pp
-
+          | _ => []
       fun is_repeated slist =
         case slist of
             [] => true
-          | x::xs => List.exists (fn s => s = x) xs
+          | x::xs => (not (List.exists (fn s => s = x) xs)) andalso is_repeated xs 
   in
       is_repeated (get_pattern_str p)
   end
@@ -135,3 +135,40 @@ fun match (v, p) =
 fun first_match v plist =
   SOME (first_answer (fn p => match(v, p)) plist)
   handle NoAnswer => NONE
+
+(*Challenge problem*)
+fun type_check_single typlst p =
+  case p of
+      UnitP => UnitT
+    | TupleP ps => TupleT (List.map (fn pp => type_check_single typlst pp) ps)
+    | ConstP _ => IntT
+    | ConstructorP(str, pp) =>
+      let fun match_case x =
+            case x of
+                (name, _, t) =>
+                str = name andalso ((type_check_single typlst pp) = t orelse (type_check_single typlst pp) = Anything)
+      in case List.find match_case typlst of
+             SOME (_, a, _) => Datatype a
+           | NONE => raise NoAnswer
+      end
+    | _ => Anything
+
+fun find_lenient (t1, t2) =
+  if t1 = t2 then t1 else
+  case (t1, t2) of
+      (_, Anything) => t2
+    | (Anything, _) => t1
+    | (TupleT(ps1), TupleT(ps2))=> if length ps1 = length ps2
+                                   then TupleT(List.map find_lenient (ListPair.zip(ps1, ps2)))
+                                   else raise NoAnswer
+    | _ => raise NoAnswer
+
+fun typecheck_patterns (lst, ps) =
+  let val typs = List.map (fn x => type_check_single lst x) ps
+                 handle NoAnswer => []
+  in
+      case typs of
+          [] => NONE
+        | head::tail => SOME (List.foldl find_lenient head tail)
+                        handle NoAnswer => NONE
+  end

@@ -23,7 +23,7 @@ val test12 = count_wildcards (TupleP [Wildcard, Wildcard, UnitP]) = 2
 val test13 = count_wild_and_variable_lengths (TupleP [Wildcard, Wildcard, UnitP, Variable "sss"]) = 5
 val test14 = count_some_var("sss", TupleP [Wildcard, Variable "sss", Variable "sss", Variable "s"]) = 2
 
-val test15 = check_pat (TupleP [Variable "f", Variable "f", Variable "f"]) = true
+val test15 = check_pat (TupleP [Variable "a", Variable "b", Variable "f"]) = true
 val test16 = check_pat (TupleP [Variable "s", Variable "f", Variable "f"]) = false
 
 val test17 = match(Unit, UnitP) = SOME []
