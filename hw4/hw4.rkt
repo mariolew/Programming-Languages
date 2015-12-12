@@ -90,9 +90,37 @@
                          #t))])
               (f)))]))
 
-;; challenges
-;;(define (cycle-lists-challenge xs ys)
-  
+;; challenges. Although, silly way.
+(define (cycle-lists-challenge xs ys)
+  (letrec ([memo1 null]
+           [memo2 null]
+           [f (lambda ()
+              (cond [(and (null? memo1) (null? memo2))
+                     (begin
+                       (set! memo1 (cdr xs))
+                       (set! memo2 (cdr ys))
+                       (cons (cons (car xs) (car ys)) f))]
+                    [(null? memo1)
+                     (begin
+                       (set! memo1 (cdr xs))
+                       (let ([m (car memo2)])
+                         (begin (set! memo2 (cdr memo2))
+                                (cons (cons (car xs) m) f))))]
+                    [(null? memo2)
+                     (begin
+                       (set! memo2 (cdr ys))
+                       (let ([m (car memo1)])
+                         (begin (set! memo1 (cdr memo1))
+                                (cons (cons m (car ys)) f))))]
+                    [#t (begin
+                          (let ([m1 (car memo1)]
+                                [m2 (car memo2)])
+                                (begin
+                                  (set! memo1 (cdr memo1))
+                                  (set! memo2 (cdr memo2))
+                                  (cons (cons m1 m2) f))))]))])
+    f))
+                          
     
                   
                   

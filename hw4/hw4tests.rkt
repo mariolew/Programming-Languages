@@ -33,6 +33,7 @@
 (define (place-picture window filename grid-posn)
   (let ([posn (grid-posn-to-posn grid-posn)])
     ((clear-solid-rectangle window) posn approx-pic-width approx-pic-height)
+
     ((draw-pixmap window) filename posn)))
 
 (define (place-repeatedly window pause stream n)
@@ -61,7 +62,7 @@
 
 ; a zero-argument function: call (one-visual-test) to open the graphics window, etc.
 (define (one-visual-test)
-  (place-repeatedly (open-window) 0.5 (cycle-lists nums files) 27))
+  (place-repeatedly (open-window) 0.5 (cycle-lists-challenge nums files) 27))
 
 ; similar to previous but uses only two files and one position on the grid
 (define (visual-zero-only)
