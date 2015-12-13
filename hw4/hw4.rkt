@@ -91,36 +91,41 @@
               (f)))]))
 
 ;; challenges. Although, silly way.
+;; 12.13 update, a better way without mutation
 (define (cycle-lists-challenge xs ys)
-  (letrec ([memo1 null]
-           [memo2 null]
-           [f (lambda ()
+  (letrec (;[memo1 null]
+           ;[memo2 null]
+           [f (lambda (memo1 memo2)
               (cond [(and (null? memo1) (null? memo2))
-                     (begin
-                       (set! memo1 (cdr xs))
-                       (set! memo2 (cdr ys))
-                       (cons (cons (car xs) (car ys)) f))]
+                     ;(begin
+                      ; (set! memo1 (cdr xs))
+                       ;(set! memo2 (cdr ys))
+                     (cons (cons (car xs) (car ys)) (lambda () (f (cdr xs) (cdr ys))))]
                     [(null? memo1)
-                     (begin
-                       (set! memo1 (cdr xs))
-                       (let ([m (car memo2)])
-                         (begin (set! memo2 (cdr memo2))
-                                (cons (cons (car xs) m) f))))]
+                     ;(begin
+                      ; (set! memo1 (cdr xs))
+                       ;(let ([m (car memo2)])
+                         ;(begin (set! memo2 (cdr memo2))
+                     (cons (cons (car xs) (car memo2)) (lambda () (f (car xs) (cdr memo2))))]
                     [(null? memo2)
-                     (begin
-                       (set! memo2 (cdr ys))
-                       (let ([m (car memo1)])
-                         (begin (set! memo1 (cdr memo1))
-                                (cons (cons m (car ys)) f))))]
-                    [#t (begin
-                          (let ([m1 (car memo1)]
-                                [m2 (car memo2)])
-                                (begin
-                                  (set! memo1 (cdr memo1))
-                                  (set! memo2 (cdr memo2))
-                                  (cons (cons m1 m2) f))))]))])
-    f))
-                          
+                     ;(begin
+                      ; (set! memo2 (cdr ys))
+                       ;(let ([m (car memo1)])
+                       ;  (begin (set! memo1 (cdr memo1))
+                     (cons (cons (car memo1) (car ys)) (lambda () (f (cdr memo1) (car ys))))]
+                    [#t ;(begin
+                          ;(let ([m1 (car memo1)]
+                           ;     [m2 (car memo2)])
+                            ;    (begin
+                             ;     (set! memo1 (cdr memo1))
+                              ;    (set! memo2 (cdr memo2))
+                     (cons (cons (car memo1) (car memo2)) (lambda () (f (cdr memo1) (cdr memo2))))]))]) 
+    (lambda () (f null null))))
+
+
+;; The second challenge, I have no idea yet.
+
+
     
                   
                   
